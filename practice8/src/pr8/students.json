@@ -1,0 +1,30 @@
+[
+  {
+    "name" : "Serhii Hryhorenko",
+    "major" : 121,
+    "group" : 6,
+    "gpa": 85.12,
+    "address" : "Brovary"
+  },
+  {
+    "name" : "Kropyvnytska Valeria",
+    "major" : 121,
+    "group" : 4,
+    "gpa": 91.36,
+    "address" : "Volodymyrets"
+  },
+  {
+    "name" : "Prokhorov Olexandr",
+    "major" : 121,
+    "group" : 4,
+    "gpa": 87.56,
+    "address" : "Kyiv"
+  },
+  {
+    "name" : "Hrysiuk Anastasia",
+    "major" : 121,
+    "group" : 6,
+    "gpa": 83.09,
+    "address" : "Goshcha"
+  }
+]
