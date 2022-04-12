@@ -1,8 +1,6 @@
 package pr8;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Main {
     private static Scanner scanner = new Scanner(System.in);
@@ -44,7 +42,7 @@ public class Main {
 
         System.out.println(GPA);
         double gpa = Double.parseDouble(scanner.nextLine());
-        while (gpa < 0) {
+        while (gpa < 0 && gpa > 100) {
             System.err.println(INPUT_ERROR);
             gpa = Integer.parseInt(scanner.nextLine());
         }
@@ -96,3 +94,4 @@ public class Main {
         } while (flag);
     }
 }
+
