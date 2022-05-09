@@ -29,6 +29,7 @@ public class Group {
 
     public static Group[] arrayOf(Collection<Student> source) {
         ArrayList<Group> groups = new ArrayList<>();
+
         Map<Integer, List<Student>> groupMap = source.stream()
                 .collect(Collectors.groupingBy(Student::getGroup, Collectors.toList()));
 
