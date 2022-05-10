@@ -1,9 +1,4 @@
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 
 public class MyLinkedList<E> {
     private int size;
@@ -23,14 +18,22 @@ public class MyLinkedList<E> {
             this.next = next;
         }
 
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Node)) return false;
+            Node<?> node = (Node<?>) o;
+            return Objects.equals(next, node.next) && Objects.equals(previous, node.previous) && Objects.equals(value, node.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(next, previous, value);
+        }
     }
 
     public MyLinkedList() {
-    }
-
-    public MyLinkedList(Collection<? extends E> collection) {
-        this();
-        addAll(collection);
     }
 
     private void linkFirst(E e) {
@@ -45,9 +48,6 @@ public class MyLinkedList<E> {
         modCount++;
     }
 
-    /**
-     * Links e as last element.
-     */
     void linkLast(E e) {
         final Node<E> l = last;
         final Node<E> newNode = new Node<>(l, e, null);
@@ -60,9 +60,6 @@ public class MyLinkedList<E> {
         modCount++;
     }
 
-    /**
-     * Inserts element e before non-null Node succ.
-     */
     void linkBefore(E e, Node<E> succ) {
         assert succ != null;
         final Node<E> pred = succ.previous;
@@ -76,9 +73,6 @@ public class MyLinkedList<E> {
         modCount++;
     }
 
-    /**
-     * Unlinks non-null first node f.
-     */
     private E unlinkFirst(Node<E> f) {
         // assert f == first && f != null;
         final E element = f.value;
@@ -95,9 +89,6 @@ public class MyLinkedList<E> {
         return element;
     }
 
-    /**
-     * Unlinks non-null last node l.
-     */
     private E unlinkLast(Node<E> l) {
         // assert l == last && l != null;
         final E element = l.value;
@@ -114,9 +105,6 @@ public class MyLinkedList<E> {
         return element;
     }
 
-    /**
-     * Unlinks non-null node x.
-     */
     E unlink(Node<E> x) {
         // assert x != null;
         final E element = x.value;
@@ -143,84 +131,126 @@ public class MyLinkedList<E> {
         return element;
     }
 
-    @Override
     public int size() {
         return size;
     }
 
-    @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
-    @Override
     public boolean contains(Object o) {
+        for (Node<E> node = first; node.next != null; node = node.next) {
+            if (node.value.equals(o))
+                return true;
+        }
         return false;
     }
 
     public Object[] toArray() {
-        return new Object[0];
+        Object[] result = new Object[size];
+        int i = 0;
+        for (Node<E> node = first; node != null; node = node.next)
+            result[i++] = node.value;
+        return result;
     }
 
-    public boolean add(Object o) {
-        return false;
+    public boolean add(E e) {
+        linkLast(e);
+        return true;
     }
 
     public boolean remove(Object o) {
-        if (!contains(o))
+        if (o == null || !contains(o))
             return false;
-        unlink(o);
-    }
-
-    public boolean addAll(Collection c) {
-        return false;
-    }
-
-    public boolean addAll(int index, Collection c) {
-        return false;
-    }
-
-    public void sort(Comparator c) {
-
+        for (Node<E> node = first; node != null; node = node.next) {
+            if (o.equals(node.value))
+                unlink(node);
+        }
+        return true;
     }
 
     public void clear() {
-
+        for (Node<E> x = first; x != null; ) {
+            Node<E> next = x.next;
+            x.previous = null;
+            x.value = null;
+            x.next = null;
+            x = next;
+        }
+        first = last = null;
+        size = 0;
     }
 
-    public Object get(int index) {
-        return null;
+    private boolean isElementIndex(int index) {
+        return index >= 0 && index < size;
     }
 
-    public Object set(int index, Object element) {
-        return null;
+    private Node<E> node(int index) {
+        Node<E> x = first;
+        for (int i = 0; i < index; i++)
+            x = x.next;
+        return x;
     }
 
-    public void add(int index, Object element) {
+    public E get(int index) {
+        assert isElementIndex(index);
+        return node(index).value;
+    }
 
+    public E set(int index, E element) {
+        assert isElementIndex(index);
+        return node(index).value = element;
+    }
+
+    public void add(int index, E element) {
+        assert isElementIndex(index);
+
+        if (index == size)
+            linkLast(element);
+        else
+            linkBefore(element, node(index));
     }
 
     public Object remove(int index) {
-        return null;
+        assert isElementIndex(index);
+        return unlink(node(index));
     }
 
     public int indexOf(Object o) {
-        return 0;
+        int index = 0;
+        if (o == null) {
+            for (Node<E> node = first; node != null; node = node.next) {
+                if (node.value == null)
+                    return index;
+                index++;
+            }
+        } else {
+            for (Node<E> node = first; node != null; node = node.next) {
+                if (o.equals(node.value))
+                    return index;
+                index++;
+            }
+        }
+        return -1;
     }
 
-    public int lastIndexOf(Object o) {
-        return 0;
+    public MyLinkedList<E> subList(int fromIndex) {
+        assert isElementIndex(fromIndex);
+        return subList(fromIndex, size);
     }
 
-    public List subList(int fromIndex, int toIndex) {
-        return null;
+    public MyLinkedList<E> subList(int fromIndex, int toIndex) {
+        assert isElementIndex(fromIndex) && isElementIndex(toIndex);
+        MyLinkedList<E> sublist = new MyLinkedList<>();
+        for (Node<E> node = node(fromIndex); !node.equals(node(toIndex)) && node.next != null; node = node.next) {
+            sublist.add(node.value);
+        }
+        return sublist;
     }
 
-    public boolean removeAll(Collection c) {
-        return false;
-    }
-
-    public boolean containsAll(Collection c) {
-        return false;
+    @Override
+    public String toString() {
+        return Arrays.toString(toArray());
     }
 }

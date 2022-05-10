@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +49,7 @@ public class Main extends JFrame {
                             .distinct()
                             .sorted()
                             .toList();
-
+                    writeDictionary(words);
                     System.out.println(words);
                     List<Map<String, Integer>> freq = Arrays.stream(files)
                             .map(Dictionary::readFile)
@@ -81,6 +83,18 @@ public class Main extends JFrame {
         });
     }
 
+    void writeDictionary(List<String> words) {
+        try {
+            FileWriter fw = new FileWriter("./dictionary.txt");
+            for (String word : words) {
+                fw.write(word + '\n');
+            }
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     void showDictionary(List<String> words, List<Map<String, Integer>> freq) {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

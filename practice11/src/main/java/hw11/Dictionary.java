@@ -82,7 +82,10 @@ public class Dictionary {
             var map = freq.get(i);
 
             if (map.containsKey(word)) {
-                result.append(fileNames.get(i)).append(" : ").append(map.get(word)).append(' ');
+                result.append('[')
+                        .append(fileNames.get(i)).append(" : ").append(map.get(word))
+                        .append(']')
+                        .append(' ');
                 total += map.get(word);
             }
         }

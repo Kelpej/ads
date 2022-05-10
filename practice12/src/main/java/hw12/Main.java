@@ -1,10 +1,14 @@
 package hw12;
 
+import pr12.FileSizeException;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -37,17 +41,31 @@ public class Main extends JFrame {
                     File[] files = chosenFile.getSelectedFiles();
 
                     List<String> words = Arrays.stream(files)
-                            .map(Dictionary::readFile)
+                            .map(file -> {
+                                try {
+                                    return Dictionary.readFile(file);
+                                } catch (FileSizeException fse) {
+                                    System.err.println(fse.getMessage());
+                                    return null;
+                                }
+                            })
                             .filter(Objects::nonNull)
                             .map(Dictionary::words)
                             .flatMap(List::stream)
                             .distinct()
                             .sorted()
                             .toList();
-
                     System.out.println(words);
+                    writeDictionary(words);
                     List<Map<String, Integer>> freq = Arrays.stream(files)
-                            .map(Dictionary::readFile)
+                            .map(file -> {
+                                try {
+                                    return Dictionary.readFile(file);
+                                } catch (FileSizeException fse) {
+                                    System.err.println(fse.getMessage());
+                                    return null;
+                                }
+                            })
                             .filter(Objects::nonNull)
                             .map(Dictionary::words)
                             .map(Dictionary::wordFrequencies)
@@ -78,6 +96,18 @@ public class Main extends JFrame {
         });
     }
 
+    void writeDictionary(List<String> words) {
+        try {
+            FileWriter fw = new FileWriter("./dictionary.txt");
+            for (String word : words) {
+                fw.write(word + '\n');
+            }
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     void showDictionary(List<String> words, List<Map<String, Integer>> freq) {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

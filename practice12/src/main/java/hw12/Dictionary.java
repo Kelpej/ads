@@ -13,13 +13,16 @@ import java.util.*;
 public class Dictionary {
     public static List<String> fileNames = new ArrayList<>();
 
-    public static String readFile(File file) {
+    public static String readFile(File file) throws FileSizeException {
+        long size = 0;
         try {
-            var size = Files.size(file.toPath());
-            if (size < 15 * 1024)
-                throw new FileSizeException(file.getName() + " is not big enough.");
-        } catch (IOException | FileSizeException e) {
-            System.err.println(e.getMessage());
+            size = Files.size(file.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (size < 150 * 1024) {
+            throw new FileSizeException(file.getName() + " is not big enough.");
         }
 
         if (file.getName().endsWith(".docx"))
@@ -84,7 +87,10 @@ public class Dictionary {
             var map = freq.get(i);
 
             if (map.containsKey(word)) {
-                result.append(fileNames.get(i)).append(" : ").append(map.get(word)).append(' ');
+                result.append('[')
+                        .append(fileNames.get(i)).append(" : ").append(map.get(word))
+                        .append(']')
+                        .append(' ');
                 total += map.get(word);
             }
         }
